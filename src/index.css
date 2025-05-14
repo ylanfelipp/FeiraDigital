@@ -1,0 +1,9 @@
+@import 'tailwindcss';
+
+* {
+    font-family: 'Roboto', sans-serif;
+}
+
+.btn-link {
+    @apply font-semibold text-xl mx-2 cursor-pointer
+}
