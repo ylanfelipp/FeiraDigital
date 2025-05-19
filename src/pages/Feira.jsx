@@ -36,7 +36,7 @@ const Feira = () => {
                     </h2>
                     <div>
                         <span className="opacity-70">
-                            {feira.cidade}
+                            {feira.endereco}
                         </span>
                         <br />
                         <span className="text-green-600 opacity-70">
