@@ -20,6 +20,7 @@ const Feira = () => {
                 credentials: "include"
             })
             const produtosJSON = await resp.json()
+            console.log(produtosJSON)
             setProdutos(Array.isArray(produtosJSON) ? produtosJSON : [])
         }
         getProdutos()

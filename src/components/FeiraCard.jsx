@@ -17,6 +17,7 @@ const FeiraCard = ({ _id, nome, cidade, horario }) => {
         }
 
         const feiraFavorita = {_id, nome, cidade, horario, userId: usuario.id }
+        console.log(feiraFavorita)
 
         await fetch('http://localhost:4040/v1/api/favoritos', {
             method: "POST",
