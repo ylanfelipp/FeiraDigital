@@ -7,3 +7,7 @@
 .btn-link {
     @apply font-semibold text-xl mx-2 cursor-pointer
 }
+
+.btn-details {
+    @apply bg-[#1B263B] h-[3rem] w-[12rem] text-white font-semibold hover:bg-white hover:text-[#1B263B] transition-all duration-300 border-2 border-[#1B263B] rounded cursor-pointer
+}

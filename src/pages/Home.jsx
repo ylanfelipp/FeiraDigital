@@ -1,14 +1,17 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import FeiraCard from '../components/FeiraCard'
 
 const Home = () => {
-
     const [feiras, setFeiras] = useState([])
+
     useEffect(() => {
         const getAllFeiras = async () => {
-            const feiras = await fetch("https://6824f33d0f0188d7e72b84a7.mockapi.io/v1/api/feiras")
-            const feirasJSON = await feiras.json()
-            setFeiras(feirasJSON)
+            const resp = await fetch("http://localhost:4040/v1/api/feiras", {
+                credentials: "include"
+            })
+            const feirasJSON = await resp.json()
+            // Garante que feiras seja sempre um array
+            setFeiras(Array.isArray(feirasJSON) ? feirasJSON : [])
         }
         getAllFeiras()
     }, [])

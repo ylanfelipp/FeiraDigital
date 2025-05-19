@@ -1,17 +1,31 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
+import ProdutoCard from '../components/ProdutoCard'
 
-const Feira = ({ }) => {
+const Feira = () => {
     const params = useParams()
     const [feira, setFeira] = useState({})
+    const [produtos, setProdutos] = useState([])
+
     useEffect(() => {
         const getFeiraById = async () => {
-            const resp = await fetch("https://6824f33d0f0188d7e72b84a7.mockapi.io/v1/api/feiras/" + params.id)
+            const resp = await fetch("http://localhost:4040/v1/api/feiras/" + params.id, {
+                credentials: "include"
+            })
             const feira = await resp.json()
             setFeira(feira)
         }
+        const getProdutos = async () => {
+            const resp = await fetch("http://localhost:4040/v1/api/produtos/feiras/" + params.id, {
+                credentials: "include"
+            })
+            const produtosJSON = await resp.json()
+            setProdutos(Array.isArray(produtosJSON) ? produtosJSON : [])
+        }
+        getProdutos()
         getFeiraById()
-    }, [])
+    }, [params.id])
+
     return (
         <div className="m-4">
             <div className="my-4">
@@ -36,8 +50,10 @@ const Feira = ({ }) => {
                         Produtos
                     </h2>
                 </div>
-                <div>
-
+                <div className="flex gap-2">
+                    {produtos.map(produto => (
+                        <ProdutoCard { ...produto } key={produto._id} />
+                    ))}
                 </div>
             </div>
         </div>

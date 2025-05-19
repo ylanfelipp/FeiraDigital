@@ -1,19 +1,53 @@
-import { createContext, useEffect, useState } from "react";
-
-export const FeiraContext = createContext(null)
+import { useEffect, useState } from "react"
+import FeiraContext from "./FeiraContext"
 
 const ContextProvider = ({ children }) => {
     const [favoritos, setFavoritos] = useState([])
+    const [carrinho, setCarrinho] = useState([])
+    const [usuario, setUsuario] = useState(null)
+
     useEffect(() => {
-        const getAllFavoritos = async () => {
-            const feirasFavoritos = await fetch("https://6824f33d0f0188d7e72b84a7.mockapi.io/v1/api/favoritos")
-            const feirasFavoritosJSON = await feirasFavoritos.json()
-            setFavoritos(feirasFavoritosJSON)
+        const getUsuario = async () => {
+            const resp = await fetch("http://localhost:4040/v1/api/usuarios/check", {
+                credentials: "include"
+            })
+            if (resp.ok) {
+                const data = await resp.json()
+                setUsuario(data.usuario)
+            } else {
+                setUsuario(null)
+                setCarrinho([])
+                setFavoritos([])
+            }
         }
-        getAllFavoritos()
+        getUsuario()
     }, [])
+
+    useEffect(() => {
+        if (!usuario) return
+
+        const getCarrinho = async () => {
+            const resp = await fetch(`http://localhost:4040/v1/api/carrinho/${usuario.id}`, {
+                credentials: "include"
+            })
+            const carrinho = await resp.json()
+            setCarrinho(Array.isArray(carrinho.produtos) ? carrinho.produtos : [])
+        }
+
+        const getFavoritos = async () => {
+            const resp = await fetch(`http://localhost:4040/v1/api/favoritos/${usuario.id}`, {
+                credentials: "include"
+            })
+            const favoritos = await resp.json()
+            setFavoritos(Array.isArray(favoritos) ? favoritos : [])
+        }
+
+        getCarrinho()
+        getFavoritos()
+    }, [usuario])
+
     return (
-        <FeiraContext.Provider value={{ favoritos, setFavoritos }}>
+        <FeiraContext.Provider value={{ favoritos, setFavoritos, carrinho, setCarrinho, usuario }}>
             {children}
         </FeiraContext.Provider>
     )

@@ -1,32 +1,36 @@
-import React, { useContext } from 'react'
+import { useContext } from 'react'
 import { Link } from 'react-router-dom'
-import { FeiraContext } from '../context/ContextProvider'
+import FeiraContext from '../context/FeiraContext'
 
-const FeiraCard = ({ id, nome, cidade, horario }) => {
-    const { favoritos, setFavoritos } = useContext(FeiraContext)
-    
+const FeiraCard = ({ _id, nome, cidade, horario }) => {
+    const { favoritos, setFavoritos, usuario } = useContext(FeiraContext)
+
     const handleFavoritos = async () => {
-        if (favoritos.some(feira => feira.nome === nome)) {
+        if (!usuario) {
+            alert("Você precisa estar logado para favoritar uma feira.")
             return
         }
 
-        const favoritosJSON = await fetch("https://6824f33d0f0188d7e72b84a7.mockapi.io/v1/api/favoritos", {
+        if (favoritos.some(feira => feira._id === _id)) {
+            alert("Feira já está nos favoritos.")
+            return
+        }
+
+        const feiraFavorita = {_id, nome, cidade, horario, userId: usuario.id }
+
+        await fetch('http://localhost:4040/v1/api/favoritos', {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Accept": "application/json"
-            },
-            body: JSON.stringify({ id, nome, cidade, horario })
+            headers: { "Content-Type": "application/json" },
+            credentials: "include",
+            body: JSON.stringify(feiraFavorita)
         })
-
-        const content = await favoritosJSON.json()
-
-        setFavoritos(feiras => [...feiras, content])
+            setFavoritos(feiras => [...feiras, feiraFavorita])
+            alert("Feira adicionada aos favoritos")
     }
 
     return (
         <div className="bg-[#E0E1DD] flex justify-between items-center w-[30rem] my-4 p-4 rounded-xl">
-            <Link to={`/feiras/${id}`}>
+            <Link to={`/feiras/${_id}`}>
                 <div className="flex flex-col">
                     <strong>{nome}</strong>
                     <span className="opacity-90">
@@ -38,7 +42,7 @@ const FeiraCard = ({ id, nome, cidade, horario }) => {
                 </div>
             </Link>
             <div>
-                <button 
+                <button
                     className="bg-[#1B263B] text-white font-semibold p-2 cursor-pointer rounded"
                     onClick={handleFavoritos}
                 >
